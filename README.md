@@ -55,15 +55,14 @@ python frontier.py cov.json --top 20 --include target --exclude harness \
 python run_benchmark.py --config benchmark.example.json --tools both --agentic 4
 ```
 
-## Benchmark: 10 apps, 5 text / 5 binary — built on Magma
+## Benchmark:
 
 Magma is the credible substrate: standard, prebuilt AFL harnesses + seed
 corpora, and **canaries at real bugs** behind hard branches, so the online
 evaluation measures real bugs, not just crashes.
 
-- **text:** sqlite3, lua, libxml2, php, openssl
-- **binary:** libpng (PNG), libtiff (TIFF), poppler (PDF — Penghui's `pdftotext`
-  case), FFmpeg / libarchive (container)
+- **text:** sqlite3, openssl
+- **binary:** libpng (PNG), libtiff (TIFF), poppler, FFmpeg / libarchive (container)
 
 ## Evaluation
 
@@ -104,9 +103,7 @@ Each package bundles the curated `hard.jsonl`, a source-annotated
 the exact pinned commit and harness path. All 7 match Magma's own pinned
 commit **except libpng**, which was built from `pnggroup/libpng@d1d0abe`
 instead of Magma's pinned `glennrp/libpng@a37d483` — see
-`share/libpng/MANIFEST.txt` for the full note.
-
-Not yet mined: libxml2, lua, php (the remaining 3 of Magma's 10 targets).
+`share/libpng/MANIFEST.txt` for the full note
 
 **Claude CLI backend confirmed working end-to-end (2026-07-08):** the
 original `ClaudeCLIBackend` shelled out to `claude --print --output-format
