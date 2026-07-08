@@ -1,0 +1,30 @@
+{
+  "targets": [
+    {
+      "name": "libpng",
+      "input_type": "binary",
+      "src": ["/magma/targets/libpng/repo/pngrutil.c",
+              "/magma/targets/libpng/src/harness.c"],
+      "seed": "/magma/targets/libpng/corpus/default.png",
+      "cov_harness": "/build/libpng/harness_cov",
+      "branches": "/out/libpng/hard.jsonl"
+    },
+    {
+      "name": "poppler",
+      "input_type": "binary",
+      "src": ["/magma/targets/poppler/repo/poppler/Parser.cc",
+              "/magma/targets/poppler/src/harness.cc"],
+      "seed": "/magma/targets/poppler/corpus/default.pdf",
+      "cov_harness": "/build/poppler/harness_cov",
+      "branches": "/out/poppler/hard.jsonl"
+    },
+    {
+      "name": "sqlite3",
+      "input_type": "text",
+      "src": ["/magma/targets/sqlite3/repo/sqlite3.c",
+              "/magma/targets/sqlite3/src/harness.c"],
+      "cov_harness": "/build/sqlite3/harness_cov",
+      "branches": "/out/sqlite3/hard.jsonl"
+    }
+  ]
+}

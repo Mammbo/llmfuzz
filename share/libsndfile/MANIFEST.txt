@@ -1,0 +1,32 @@
+benchmark : libsndfile
+created   : 2026-07-08T18:57:02Z
+branches  : 8   (see hard.jsonl / hard_branches.md)
+corpus    : 30 files (in corpus/ ; the inputs these branches were mined from)
+sources   : /tmp/libsndfile_src/src/wav.c /tmp/libsndfile_src/src/aiff.c /tmp/libsndfile_src/src/flac.c /tmp/libsndfile_src/src/ima_adpcm.c /tmp/libsndfile_src/src/ms_adpcm.c /tmp/libsndfile_src/src/nist.c /tmp/libsndfile_src/src/caf.c
+
+library + version/commit : libsndfile @ 86c9f9eb7022d186ad4d0689487e7d4f04ce2b29
+                            (github.com/libsndfile/libsndfile.git -- matches
+                            Magma's magma/targets/libsndfile/fetch.sh pin exactly)
+  fuzz harness             : ossfuzz/sndfile_fuzzer.cc (in-repo; built via
+                            ./autogen.sh && ./configure --enable-ossfuzzers
+                            && make ossfuzz/sndfile_fuzzer with
+                            LIB_FUZZING_ENGINE=<driver.o path>; requires the
+                            `autogen` package, distinct from autoconf/automake)
+  AFL queue                : magma/tools/captain/workdir/ar/aflplusplus/libsndfile/sndfile_fuzzer/0/findings/default/queue
+                            (3481 files; corpus/ here is a 30-file UNMINIMIZED
+                            sample, not the full queue -- afl-cmin is not
+                            available on this host, see LAB_WORKFLOW.md §4b)
+
+Reproduce (two builds of the same harness):
+  afl build : afl-clang-fast -g -O2 <harness.c> <target.c> -o afl_target
+              (append libAFLDriver.a if it is a libFuzzer-style harness)
+  cov build : clang -g -O1 -fprofile-instr-generate -fcoverage-mapping \
+              <harness.c> <target.c> -o cov_target
+
+Mine (how these branches were produced):
+  AFL_SKIP_CPUFREQ=1 afl-fuzz -i seeds -o out -- ./afl_target @@
+  ./afl_workflow.sh afl_target cov_target out/default/queue <include> result <mode>
+
+Test with llmfuzz (offline, NO afl needed):
+  edit benchmark.json to point at cov_target + hard.jsonl + a seed, then
+  python3 run_benchmark.py --config benchmark.json --backend gemini --tools both --agentic 4

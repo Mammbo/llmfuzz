@@ -1,0 +1,29 @@
+benchmark : sqlite3
+created   : 2026-07-08T18:57:01Z
+branches  : 9   (see hard.jsonl / hard_branches.md)
+corpus    : 30 files (in corpus/ ; the inputs these branches were mined from)
+sources   : /tmp/sqlite_src/sqlite3.c
+
+library + version/commit : sqlite3 3.37.0, tarball r=8c432642572c8c4b
+                            (sqlite.org/src/tarball -- matches Magma's
+                            magma/targets/sqlite3/fetch.sh pin exactly)
+  fuzz harness             : test/ossfuzz.c (in-repo, compiled with
+                            -DSQLITE_OSS_FUZZ; see magma/targets/sqlite3/build.sh)
+  AFL queue                : magma/tools/captain/workdir/ar/aflplusplus/sqlite3/sqlite3_fuzz/0/findings/default/queue
+                            (6805 files; corpus/ here is a 30-file UNMINIMIZED
+                            sample, not the full queue -- afl-cmin is not
+                            available on this host, see LAB_WORKFLOW.md §4b)
+
+Reproduce (two builds of the same harness):
+  afl build : afl-clang-fast -g -O2 <harness.c> <target.c> -o afl_target
+              (append libAFLDriver.a if it is a libFuzzer-style harness)
+  cov build : clang -g -O1 -fprofile-instr-generate -fcoverage-mapping \
+              <harness.c> <target.c> -o cov_target
+
+Mine (how these branches were produced):
+  AFL_SKIP_CPUFREQ=1 afl-fuzz -i seeds -o out -- ./afl_target @@
+  ./afl_workflow.sh afl_target cov_target out/default/queue <include> result <mode>
+
+Test with llmfuzz (offline, NO afl needed):
+  edit benchmark.json to point at cov_target + hard.jsonl + a seed, then
+  python3 run_benchmark.py --config benchmark.json --backend gemini --tools both --agentic 4

@@ -1,0 +1,37 @@
+benchmark : libpng
+created   : 2026-07-08T18:57:00Z
+branches  : 10   (see hard.jsonl / hard_branches.md)
+corpus    : 30 files (in corpus/ ; the inputs these branches were mined from)
+sources   : /tmp/libpng/pngrutil.c /tmp/libpng/png.c /tmp/libpng/pngmem.c
+
+library + version/commit : libpng @ d1d0abeffede1cc898ddc3d0e600839cf026d749
+                            (github.com/pnggroup/libpng.git)
+                            DEVIATION: Magma's own magma/targets/libpng/fetch.sh
+                            pins glennrp/libpng.git @ a37d4836519517bdce6cb9d956092321eca3e73b.
+                            This build used pnggroup/libpng (glennrp/libpng's
+                            successor repo after a maintainer-org move) at a
+                            different, more recent commit instead -- branch
+                            FILE:LINE numbers here may not line up with a
+                            checkout of Magma's exact pinned commit. Re-derive
+                            from the pinned commit if strict Magma provenance
+                            matters for your use case.
+  fuzz harness             : contrib/oss-fuzz/libpng_read_fuzzer.cc (in-repo,
+                            libFuzzer-style; see magma/targets/libpng/build.sh)
+  AFL queue                : magma/tools/captain/workdir/findings/default/queue
+                            (1721 files; corpus/ here is a 30-file UNMINIMIZED
+                            sample, not the full queue -- afl-cmin is not
+                            available on this host, see LAB_WORKFLOW.md §4b)
+
+Reproduce (two builds of the same harness):
+  afl build : afl-clang-fast -g -O2 <harness.c> <target.c> -o afl_target
+              (append libAFLDriver.a if it is a libFuzzer-style harness)
+  cov build : clang -g -O1 -fprofile-instr-generate -fcoverage-mapping \
+              <harness.c> <target.c> -o cov_target
+
+Mine (how these branches were produced):
+  AFL_SKIP_CPUFREQ=1 afl-fuzz -i seeds -o out -- ./afl_target @@
+  ./afl_workflow.sh afl_target cov_target out/default/queue <include> result <mode>
+
+Test with llmfuzz (offline, NO afl needed):
+  edit benchmark.json to point at cov_target + hard.jsonl + a seed, then
+  python3 run_benchmark.py --config benchmark.json --backend gemini --tools both --agentic 4

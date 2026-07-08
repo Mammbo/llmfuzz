@@ -1,0 +1,33 @@
+benchmark : poppler
+created   : 2026-07-08T18:57:25Z
+branches  : 8   (see hard.jsonl / hard_branches.md)
+corpus    : 30 files (in corpus/ ; the inputs these branches were mined from)
+sources   : /tmp/poppler_src/poppler/Stream.cc /tmp/poppler_src/poppler/XRef.cc /tmp/poppler_src/poppler/Parser.cc /tmp/poppler_src/poppler/Catalog.cc
+
+library + version/commit : poppler @ 1d23101ccebe14261c6afc024ea14f29d209e760
+                            (gitlab.freedesktop.org/poppler/poppler.git --
+                            matches Magma's magma/targets/poppler/fetch.sh pin
+                            exactly), plus freetype2 @
+                            50d0033f7ee600c5f5831b28877353769d1f7d48 as a
+                            build dependency (see magma/targets/poppler/build.sh)
+  fuzz harness             : magma/targets/poppler/src/pdf_fuzzer.cc
+                            (vendored by Magma; libFuzzer-style)
+  AFL queue                : magma/tools/captain/workdir/ar/aflplusplus/poppler/pdf_fuzzer/0/findings/default/queue
+                            (13153 files; corpus/ here is a 30-file
+                            UNMINIMIZED sample, not the full queue -- afl-cmin
+                            is not available on this host, see
+                            LAB_WORKFLOW.md §4b)
+
+Reproduce (two builds of the same harness):
+  afl build : afl-clang-fast -g -O2 <harness.c> <target.c> -o afl_target
+              (append libAFLDriver.a if it is a libFuzzer-style harness)
+  cov build : clang -g -O1 -fprofile-instr-generate -fcoverage-mapping \
+              <harness.c> <target.c> -o cov_target
+
+Mine (how these branches were produced):
+  AFL_SKIP_CPUFREQ=1 afl-fuzz -i seeds -o out -- ./afl_target @@
+  ./afl_workflow.sh afl_target cov_target out/default/queue <include> result <mode>
+
+Test with llmfuzz (offline, NO afl needed):
+  edit benchmark.json to point at cov_target + hard.jsonl + a seed, then
+  python3 run_benchmark.py --config benchmark.json --backend gemini --tools both --agentic 4

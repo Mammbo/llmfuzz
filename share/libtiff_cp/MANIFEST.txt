@@ -1,0 +1,31 @@
+benchmark : libtiff_cp
+created   : 2026-07-08T18:57:25Z
+branches  : 9   (see hard.jsonl / hard_branches.md)
+corpus    : 30 files (in corpus/ ; the inputs these branches were mined from)
+sources   : /tmp/libtiff_src/tools/tiffcp.c /tmp/libtiff_src/libtiff/tif_dirread.c /tmp/libtiff_src/libtiff/tif_pixarlog.c /tmp/libtiff_src/libtiff/tif_jpeg.c
+
+library + version/commit : libtiff @ c145a6c14978f73bb484c955eb9f84203efcb12e
+                            (gitlab.com/libtiff/libtiff -- matches Magma's
+                            magma/targets/libtiff/fetch.sh pin exactly)
+  fuzz harness             : none -- tools/tiffcp.c is a real CLI tool, no
+                            libFuzzer harness; Magma invokes it directly as
+                            `tiffcp -M @@ tmp.out` (see
+                            magma/targets/libtiff/configrc's tiffcp_ARGS)
+  AFL queue                : magma/tools/captain/workdir/ar/aflplusplus/libtiff/tiffcp/0/findings/default/queue
+                            (3930 files; corpus/ here is a 30-file UNMINIMIZED
+                            sample, not the full queue -- afl-cmin is not
+                            available on this host, see LAB_WORKFLOW.md §4b)
+
+Reproduce (two builds of the same harness):
+  afl build : afl-clang-fast -g -O2 <harness.c> <target.c> -o afl_target
+              (append libAFLDriver.a if it is a libFuzzer-style harness)
+  cov build : clang -g -O1 -fprofile-instr-generate -fcoverage-mapping \
+              <harness.c> <target.c> -o cov_target
+
+Mine (how these branches were produced):
+  AFL_SKIP_CPUFREQ=1 afl-fuzz -i seeds -o out -- ./afl_target @@
+  ./afl_workflow.sh afl_target cov_target out/default/queue <include> result <mode>
+
+Test with llmfuzz (offline, NO afl needed):
+  edit benchmark.json to point at cov_target + hard.jsonl + a seed, then
+  python3 run_benchmark.py --config benchmark.json --backend gemini --tools both --agentic 4

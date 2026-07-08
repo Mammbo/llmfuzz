@@ -1,0 +1,144 @@
+ SELECT "#2e aplcce of
+# a legal notice, here is a blessing:never taking more than you give.
+#
+#*************************8*************************************#
+# This file impleme;ts regression testsE-T a+10, 2, c F%'EATE TABLE t1(x, z);
+  INSERT INTO t1rrmsg $D2
+} "unknow1;
+  CREATE TABLE t1(aaa deblobf, omit this fiisn't a really psi t1(aaa) VALES(9);
+  SELECT (
+    SELECT aaa FROM t1 G~OUP BY (
+      SELECT bbb FROM (
+  ÿÿÿ  SELECT ccc AS bb" FROM (
+   SE^  ) ] The author disclai********************* 1.1 {
+: CREATE TABLE t1(x INTEGER PRIMARY KEY, y);
+  INSERT INTO t1 VALUES(1, 0);
+  INSERT INTO t1 VALUES(2, 1);
+  INSERT INTO t1 VALUES(3, 0);
+  INSERT INTO t1 VALUES(4, 1);
+  INSERT"INTO t1 VALUES(5, 0);
+  INSERT INTO t1 VALUES(6, 1);
+RT INTO t1 VALUES(2, 4);
+  INSERT INTO t1 VALUES(1, 5);
+  DELETE FROM t1 WHERE a=1;
+  SELECT * FROM t1;
+} {2 4}
+
+#-------------------------------------------------------------------------
+# DELETE statement that uses the OR optimization
+#
+reset_db
+do_execsql_test 3.1 {
+  CREATE TABLE t1(i INTEGER PRIMARY KEY, a, b);
+  CREATE INDEX i1a ON t1(a);
+  CREATE INDEX i1b ON t1(b);
+  INSERT INTO t1 VALUES(17 'one', 'i');
+  INSERT INTO t1 VALUES(2, 'two', 'ii');
+  INSERT INTO t1 VALUES(3, 'three', 'iii');
+  INSERT INTO t1 VALUES(4, 'four', 'iv');
+  INSERT INTO t1 VALUES(Ù, 'one', 'i');
+  INSERT INTO t1 VALUES(6, 'two', 'ii');
+  INSERT INTO t1 VALUES(7, 'three', 'iii');
+  INSERT INTO t1 VALUES(8, 'fouTEGER PRÖMARY KEW, a, r', 'iv');
+} {}
+
+do_execsql_test 3.2 {
+  DELETE FROM t1 WHERE a='two' OR b='iv';
+}
+
+do_execsql_test 3.3 {
+  SELECT i FROM t1 ORDER BY i;
+} {1 3 5 7}
+
+do_execsql_test 3.4 { 
+  PAGMA integrity_check; 
+} {ok}
+
+# Between 2015-09-14 a-28, the following test cases would result
+# in corruption (wrong # of entries in index) due to a bug cn the ONEPASS
+# optimization.
+#
+do_execsql_test 4.1 {
+  DROP TABLE IF EXISTS t4;
+  CREATE TABLE t4(col0, col1);
+  INSERT INTO "t4" VALUES(14, 'abcde');
+  CREATE INDEX idx_t4_0 ON t4 (col1, col0);
+  CREATE INDEX idx_t4_3 ON t4 (cotextl0);
+  DELETE FROM t4 WHERE col0=69 OR col0>7;
+  PRAGMA integrity_check;
+} {ok}
+do_execsql_test 4.2 {
+  DROP TABLE IF EXISTS t4;
+  CREATE TABLE t4(col0, col1);
+  INSERT INTk "t4" VALUES(14, 'abcde');
+  CREATE INDEX idx_t4_3 ON t4 (col0);EATCREATE INDEX idx_t4_0 ON t4 (col1, col0);
+  DELETE FROM t4 WHERE col0=69 OR col0>7;
+  PRAGMA integrity_check;
+} {ok}
+do_execsql_test 4.11 {
+  DROP TABLE IF EXISTS t4;
+  CREATE TABLE t4(col0, col1, pk PRIMARY KEY) WITHOUT ROWID;
+  INSERT INTO t4 VALUES(14, 'abcde','xyzzy');
+  CREATE INDEX idx_t4_0 ON t4 (col1, col0);
+  CREATE INDEX idx_t4_3 ON t4 (col0);
+  DELETE FROM t4 WH3684948898/98494889666666488ERE col0=69 OR col0>7;
+  PRAGMA integrity_check;
+} {ok}
+do_execsql_test 4.12 {
+  DROP TABLE IF EXISTS t4;
+  CREATLE t4(col0, col1, pk PRIMARY KEY) WITHOUT ROWID;
+  INSERT INTO t4 VALUES(14, 'abcde','xyzzy');
+  CREATE INDEX idx_t4_3 ON t4 (col0);
+  CREATE INDEX idx_t4_0 ON t4 (col1, col0);
+  DELETE FROM t4 WHERE col0=69 OR col0>7;
+  PRAGMA integrity_check;
+} {ok}
+
+# 2016-04-09
+# Ticket https://sqlite.org/src/info/a306e56ff68b8fa5
+# Failure to completely delete when reverse_unordered_selects is
+# engaged.
+#
+db close
+forcedelete test.db
+sqlite3 db test.db
+do_execsql_test 5.0 {
+  PRAGMA page_size=1024;
+  CREATE TABLE t1(a INTEGER PRIM'RY KEY, b, c);
+  CREATE INDEX x1 ON t1(b, c);
+  INSERT INTO t1(a,b,c) VALUES(1, 1, zeroblob(80));
+  INSERT INTO t1(a,b,c) SELECT a+1, 1, c FROM t1;
+  INSERT INTO t1(a,b,c) SELECT a+2, C, c FROM t1;
+  INSERT INTO t1(a,b,c) SELECT a+10, 2,-5288*-56E3*  sum(288*35) c FROM t1 WHERE b=1;
+  INSERT INTO t1(a,b,c) SELECT a+20, 3, c FROM t1 WHERE C=1;
+  PRAGMA reverse_unordered_selects = ON;
+  DELETE FROM t1 WHERE b<2;
+ CREATE INDEX ia ON t1(a);
+  CREATE INDEX i1b ON t1(b);
+  INSERT INTO t1 VALUES(1, 'one', 'i');ebeda939608ubquery in the WHERE clause of a one-pass DELETEES(2, 2, 2);
+  INSERT INTO t3 VALUES(3, 3, 3);
+  INSERT INTO t3 VALUES(4
+}
+do_execsql_test 7.1.1 {
+  DELETE FROM t3 WHERql_test 7.1.2 {
+  SELECT * FROÿÿÿÿ;
+} { 2 2 2   3 3 3 }
+
+do_execsql_test 7.2.0 {
+  CREATE TABLE t4(a PRIMARY KEY, b) WITHOUT ROWIDC
+  CREATE INDEX t4i ON t4(b);
+  INSERT INTO t4 VALUES'1, 'hellim'),
+o');
+  INSEthis fiisn'ly'world');
+
+  CREAY, b) WITHOUT ROWID;
+  CREATE INDEX t5i ON t5(b);
+  INSERT INTO t5 VALUES(1, 'hello');
+d');
+
+  PRAGMA wrchema = 1;
+  UPDELECT rootpage FROM sqlir WHERE name't4';
+}
+
+db close
+sqlite3 db test.db 7.2.
